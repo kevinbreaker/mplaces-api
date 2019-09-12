@@ -20,3 +20,7 @@ Route.post('/register', 'AuthController.register')
 Route.post('/login', 'AuthController.authenticate')
 
 Route.get('/', 'AppController.index').middleware(['auth:jwt'])
+
+Route.group(() => {
+
+}).middleware('auth')
