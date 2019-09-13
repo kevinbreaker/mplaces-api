@@ -8,7 +8,7 @@
  * Resourceful controller for interacting with ratings
  */
 
-const Rating = user('App/Models/Rating');
+const Rating = use('App/Models/Rating');
 
 class RatingController {
   /**
@@ -21,7 +21,9 @@ class RatingController {
    * @param {View} ctx.view
    */
   async index({ request, response, view }) {
-    const ratings = await Rating.all();
+    const ratings = await Rating.query()
+      .with('user', builder => builder.select(['id', 'name', 'email']))
+      .fetch();
     return ratings;
   }
 
@@ -44,12 +46,13 @@ class RatingController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, atuh, response }) {
-    const data = request.only(['comment', 'rating', 'placeId', 'placeName']);
+  async store({ request, auth, response }) {
+    const data = request.only(['comment', 'rating', 'placeId']);
+    console.log('Data ', data);
 
     const rating = await Rating.create({ user_id: auth.user.id, ...data });
 
-    return rating
+    return rating;
   }
 
   /**
@@ -62,9 +65,9 @@ class RatingController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    const rating = await Rating.findOrFail(params.id)
+    const rating = await Rating.findOrFail(params.id);
 
-    return rating
+    return rating;
   }
 
   /**
@@ -86,7 +89,9 @@ class RatingController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response }) {
+    // const rating = await Rating.
+  }
 
   /**
    * Delete a rating with id.
@@ -96,7 +101,14 @@ class RatingController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {}
+  async destroy({ params, auth, response }) {
+    const rating = await Rating.findOrFail(params.id);
+
+    if (rating.user_id !== auth.user.id) {
+      return response.status(401);
+    }
+    await rating.delete();
+  }
 }
 
 module.exports = RatingController;
