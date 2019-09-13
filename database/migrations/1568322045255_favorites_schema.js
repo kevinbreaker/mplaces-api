@@ -15,7 +15,7 @@ class FavoritesSchema extends Schema {
         .inTable('users')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
-      table.string('placeId', 255).notNullable().unique()
+      table.string('placeId', 255).notNullable()
       table.string('placeName', 255).notNullable()
       table.string('placeIcon', 255)
       table.timestamps()
