@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -8,7 +8,7 @@
  * Resourceful controller for interacting with ratings
  */
 
-const Rating = use('App/Models/Rating');
+const Rating = use('App/Models/Rating')
 
 class RatingController {
   /**
@@ -23,8 +23,8 @@ class RatingController {
   async index({ request, response, view }) {
     const ratings = await Rating.query()
       .with('user', builder => builder.select(['id', 'name', 'email']))
-      .fetch();
-    return ratings;
+      .fetch()
+    return ratings
   }
 
   /**
@@ -36,7 +36,6 @@ class RatingController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create({ request, response, view }) {}
 
   /**
    * Create/save a new rating.
@@ -47,12 +46,13 @@ class RatingController {
    * @param {Response} ctx.response
    */
   async store({ request, auth, response }) {
-    const data = request.only(['comment', 'rating', 'placeId']);
-    console.log('Data ', data);
+    const data = request.only(['comment', 'rating', 'placeId'])
 
-    const rating = await Rating.create({ user_id: auth.user.id, ...data });
-
-    return rating;
+    const rating = await Rating.findOrCreate(
+      { user_id: auth.user.id, placeId: data.placeId },
+      { user_id: auth.user.id, ...data }
+    )
+    return rating
   }
 
   /**
@@ -65,21 +65,14 @@ class RatingController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    const rating = await Rating.findOrFail(params.id);
+    // const rating = await Rating.findByOrFail('placeId', params.id)
+    const rating = await Rating.query()
+      .with('user', builder => builder.select(['id', 'name', 'email']))
+      .where({ placeId: params.id })
+      .fetch()
 
-    return rating;
+    return rating
   }
-
-  /**
-   * Render a form to update an existing rating.
-   * GET ratings/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit({ params, request, response, view }) {}
 
   /**
    * Update rating details.
@@ -89,8 +82,20 @@ class RatingController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {
-    // const rating = await Rating.
+  async update({ params, auth, request, response }) {
+    const data = await request.only(['comment', 'rating'])
+    const id = auth.user.id
+    const place = params.id
+
+    const rating = await Rating.findBy({
+      user_id: id,
+      placeId: place
+    })
+
+    rating.merge({ ...data })
+    await rating.save()
+
+    return rating
   }
 
   /**
@@ -102,13 +107,18 @@ class RatingController {
    * @param {Response} ctx.response
    */
   async destroy({ params, auth, response }) {
-    const rating = await Rating.findOrFail(params.id);
+    const rating = await Rating.findByOrFail({
+      user_id: auth.user.id,
+      placeId: params.id
+    })
 
     if (rating.user_id !== auth.user.id) {
-      return response.status(401);
+      return response.status(401)
     }
-    await rating.delete();
+    await rating.delete()
+
+    return 'Deletado com sucesso'
   }
 }
 
-module.exports = RatingController;
+module.exports = RatingController

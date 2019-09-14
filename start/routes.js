@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /*
 |--------------------------------------------------------------------------
@@ -14,18 +14,14 @@
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
-const Route = use('Route');
+const Route = use('Route')
 
-Route.post('/register', 'AuthController.register');
-Route.post('/login', 'AuthController.authenticate');
+Route.post('/register', 'AuthController.register')
+Route.post('/login', 'AuthController.authenticate')
 
-Route.get('/', 'AppController.index').middleware(['auth:jwt']);
+Route.get('/', 'AppController.index').middleware(['auth:jwt'])
 
 Route.group(() => {
-  Route.resource('ratings', 'RatingController')
-    .apiOnly()
-    .except('update');
-  Route.resource('favorites', 'FavoriteController')
-    .apiOnly()
-    .except('update');
-}).middleware('auth');
+  Route.resource('ratings', 'RatingController').apiOnly()
+  Route.resource('favorites', 'FavoriteController').apiOnly()
+}).middleware('auth')
