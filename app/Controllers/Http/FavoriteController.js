@@ -36,24 +36,19 @@ class FavoriteController {
    * @param {Response} ctx.response
    */
   async store({ request, auth, response }) {
-    const data = request.only(['placeId', 'placeName', 'placeIcon'])
+    const data = request.only([
+      'placeId',
+      'placeName',
+      'lat',
+      'lng',
+      'placeIcon'
+    ])
     const favorite = await Favorite.findOrCreate(
       { placeId: data.placeId },
       { user_id: auth.user.id, ...data }
     )
     return favorite
   }
-
-  /**
-   * Display a single favorite.
-   * GET favorites/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show({ params, request, response, view }) {}
 
   /**
    * Update favorite details.

@@ -4,8 +4,8 @@
 const Schema = use('Schema')
 
 class FavoritesSchema extends Schema {
-  up () {
-    this.create('favorites', (table) => {
+  up() {
+    this.create('favorites', table => {
       table.increments()
       table
         .integer('user_id')
@@ -17,12 +17,14 @@ class FavoritesSchema extends Schema {
         .onDelete('CASCADE')
       table.string('placeId', 255).notNullable()
       table.string('placeName', 255).notNullable()
+      table.string('lat', 255).notNullable()
+      table.string('lng', 255).notNullable()
       table.string('placeIcon', 255)
       table.timestamps()
     })
   }
 
-  down () {
+  down() {
     this.drop('favorites')
   }
 }
