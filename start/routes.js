@@ -20,3 +20,8 @@ Route.post('/register', 'AuthController.register')
 Route.post('/login', 'AuthController.authenticate')
 
 Route.get('/', 'AppController.index').middleware(['auth:jwt'])
+
+Route.group(() => {
+  Route.resource('ratings', 'RatingController').apiOnly()
+  Route.resource('favorites', 'FavoriteController').apiOnly()
+}).middleware('auth')
