@@ -15,7 +15,7 @@ class AuthController {
       const user = await User.findBy({ email })
       const accessToken = await auth.generate(user)
       return response.json({
-        user: { name: user.name, email: user.email },
+        user: { name: user.name, email: user.email, picture: user.picture },
         token: accessToken.token
       })
     }

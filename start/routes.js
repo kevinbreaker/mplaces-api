@@ -24,4 +24,6 @@ Route.get('/', 'AppController.index').middleware(['auth:jwt'])
 Route.group(() => {
   Route.resource('ratings', 'RatingController').apiOnly()
   Route.resource('favorites', 'FavoriteController').apiOnly()
+  Route.put('user', 'UserController.update')
+  Route.get('user', 'UserController.index')
 }).middleware('auth')
